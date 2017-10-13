@@ -23,6 +23,7 @@ class Data:
             for line in f:
                 for word in line.split("\t"):
                     self.word_occurrence[int(word)] += 1
+        logging.info("Found %d words", len(self.word_occurrence))
 
     def buildIndex(self):
         """ Builds an index and reversed index between words and dense indices.
