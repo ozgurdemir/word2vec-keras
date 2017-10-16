@@ -1,17 +1,30 @@
-.PHONY: build run
+.PHONY: run test example clean download
+
+TRAIN_SET_URL="http://mattmahoney.net/dc/text8.zip"
 
 DIR=$(shell pwd)
-
-APP_NAME=word2vec-keras
-
-build: ## Build the container
-	docker build -t $(APP_NAME) .
-
-build-nc: ## Build the container without caching
-	docker build --no-cache -t $(APP_NAME) .
-
-run-it: ## Run container interactive configured in `config.env`
-	docker run -i -t --rm --name="$(APP_NAME)" $(APP_NAME) /bin/bash
+DATA_DIR=$(DIR)/data
+TEXT_DATA=$(DATA_DIR)/text8
+ZIPPED_TEXT_DATA="$(TEXT_DATA).zip"
 
 run:
 	docker run -it -t --rm -v $(DIR):/srv/ai gw000/keras /bin/bash
+
+test:
+	echo $(DATA_DIR)
+
+example:
+	docker run --rm -v $(DIR):/srv/ai gw000/keras python ai/src/main.py --train ai/data/text8
+
+download: $(TEXT_DATA)
+
+$(TEXT_DATA): $(ZIPPED_TEXT_DATA)
+	unzip -o $(ZIPPED_TEXT_DATA) -d $(DATA_DIR)
+	touch $@
+
+$(ZIPPED_TEXT_DATA):
+	wget $(TRAIN_SET_URL) -O $@
+	touch $@
+
+clean:
+	rm data/*

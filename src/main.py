@@ -1,9 +1,8 @@
-import logging
 import argparse
+import logging
 
-from word2vec import Word2Vec
 from data import Data
-from keras.preprocessing import sequence
+from word2vec import Word2Vec
 
 
 def main():
@@ -14,8 +13,7 @@ def main():
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(filename='../example.log', format=log_format, level=logging.INFO)
-    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.basicConfig(format=log_format, level=logging.INFO)
 
     data = Data(file_name=args.train)
     data.word_dict()

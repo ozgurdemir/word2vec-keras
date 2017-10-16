@@ -10,13 +10,13 @@ class Data:
     the index and the reverse index
     """
 
-    field_separator = "\t"
+    field_separator = " "
 
     def __init__(self, file_name):
         self.file_name = file_name
         self.vocab_size = 0
         self.size = 0
-        self.word_occurrence = None
+        self.word_occurrence = dict()
         self.word2Index = None
         self.index2Word = None
 
@@ -27,7 +27,7 @@ class Data:
         with open(self.file_name) as f:
             for line in f:
                 for word in line.split(self.field_separator):
-                    self.word_occurrence[int(word)] += 1
+                    self.word_occurrence[word.strip()] += 1
                     self.size += 1
         logging.info("Found %d words and %d unique words", self.size, len(self.word_occurrence))
 
@@ -37,35 +37,36 @@ class Data:
         """
         logging.info("Building up word indices")
         self.vocab_size = len(self.word_occurrence)
-        max_word = max(self.word_occurrence.keys())
-        self.word2Index = np.empty(max_word + 1, dtype="int64")
-        self.index2Word = np.empty(self.vocab_size, dtype="int64")
+        self.word2Index = dict()
+        self.index2Word = dict()
         sorted_dict = sorted(self.word_occurrence.items(), key=lambda x: x[1], reverse=True)
         for (i, (word, occurrence)) in enumerate(sorted_dict):
+            word = word.strip()
             self.index2Word[i] = word
             self.word2Index[word] = i
 
     def skip_gram_iterator(self, window_size, negative_samples, shuffle, sampling_table):
         """ Returns an iterator over pairs of words either positive or negative with their appropriate label. """
         epoch = 0
+        word_target = np.ndarray(shape=(1), dtype=np.int32)
+        word_context = np.ndarray(shape=(1), dtype=np.int32)
+        label = np.ndarray(shape=(1), dtype=np.int32)
         while True:
             with open(self.file_name) as f:
-                line_number = 0
                 for line in f:
-                    line_number += 1
-                    if line_number % 1000 == 0:
-                        logging.info("Reading line: %d", line_number)
-                    re_indexed_sentence = [self.word2Index[int(word)] for word in line.split("\t")]
+                    re_indexed_sentence = [self.word2Index[word.strip()] for word in line.split(self.field_separator)]
+                    logging.info("re-indexed sentence")
                     couples, labels = sequence.skipgrams(re_indexed_sentence, self.vocab_size,
                                                          window_size=window_size,
                                                          negative_samples=negative_samples,
                                                          shuffle=shuffle,
                                                          sampling_table=sampling_table)
+                    logging.info("returning values")
                     for (index, couple) in enumerate(couples, start=0):
                         x, y = couple
-                        word_target = np.array([x], dtype="int32")
-                        word_context = np.array([y], dtype="int32")
-                        label = np.array([labels[index]], dtype="int32")
+                        word_target[0] = x
+                        word_context[0] = y
+                        label[0] = labels[index]
                         yield ([word_target, word_context], label)
             epoch += 1
             logging.info("Iterated %d times over train set", epoch)
