@@ -23,6 +23,7 @@ $(TEXT_DATA): $(ZIPPED_TEXT_DATA)
 	touch $@
 
 $(ZIPPED_TEXT_DATA):
+	mkdir -p $(DATA_DIR)
 	wget $(TRAIN_SET_URL) -O $@
 	touch $@
 
