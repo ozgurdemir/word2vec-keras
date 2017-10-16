@@ -45,7 +45,7 @@ class Data:
             self.index2Word[i] = word
             self.word2Index[word] = i
 
-    def skip_gram_iterator(self, window_size, negative_samples, shuffle, sampling_table):
+    def skip_gram_iterator(self, window_size, negative_samples, shuffle, sampling_table, chunk_size=100):
         """ Returns an iterator over pairs of words either positive or negative with their appropriate label. """
         epoch = 0
         word_target = np.ndarray(shape=(1), dtype=np.int32)
@@ -55,18 +55,25 @@ class Data:
             with open(self.file_name) as f:
                 for line in f:
                     re_indexed_sentence = [self.word2Index[word.strip()] for word in line.split(self.field_separator)]
-                    logging.info("re-indexed sentence")
-                    couples, labels = sequence.skipgrams(re_indexed_sentence, self.vocab_size,
-                                                         window_size=window_size,
-                                                         negative_samples=negative_samples,
-                                                         shuffle=shuffle,
-                                                         sampling_table=sampling_table)
-                    logging.info("returning values")
-                    for (index, couple) in enumerate(couples, start=0):
-                        x, y = couple
-                        word_target[0] = x
-                        word_context[0] = y
-                        label[0] = labels[index]
-                        yield ([word_target, word_context], label)
+                    for chunk in self.chunks(re_indexed_sentence, chunk_size):
+                        couples, labels = sequence.skipgrams(chunk, self.vocab_size,
+                                                             window_size=window_size,
+                                                             negative_samples=negative_samples,
+                                                             shuffle=shuffle,
+                                                             sampling_table=sampling_table)
+                        for (index, couple) in enumerate(couples, start=0):
+                            x, y = couple
+                            word_target[0] = x
+                            word_context[0] = y
+                            label[0] = labels[index]
+                            yield ([word_target, word_context], label)
             epoch += 1
             logging.info("Iterated %d times over train set", epoch)
+
+    @staticmethod
+    def chunks(l, n):
+        """Yield successive n-sized chunks from l.
+        This is used for input files that contain all text as a single line.
+        """
+        for i in xrange(0, len(l), n):
+            yield l[i:i + n]
