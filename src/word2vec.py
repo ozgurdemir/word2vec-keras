@@ -41,29 +41,26 @@ class Word2Vec:
         model.compile(loss="binary_crossentropy", optimizer=optimizer)
         self.model = model
 
-    def train(self, data_set, negative_samples, epochs, window_size, max_batch):
+    def train(self, window_size, negative_samples, epochs, verbose):
         """ Trains the word2vec model """
         logging.info("Training model")
+
+        # in order to balance out more negative samples than positive
+        negative_weight = 1.0 / negative_samples
+        logging.info("Setting negative weight to: %.4f", negative_weight)
+        class_weight = {1: 1.0, 0: negative_weight}
+
+        # rough estimation of the train set size
+        steps_per_epoch = self.data.size * 2 * window_size * negative_samples
         sampling_table = sequence.make_sampling_table(self.data.vocab_size)
-        batch = 0
-        for epoch in xrange(epochs):
-            print "epoch: %d\n" % (epoch + 1)
-            with open(data_set) as f:
-                for line in f:
-                    re_indexed_sentence = [self.data.word2Index[int(word)] for word in line.split("\t")]
-                    couples, labels = sequence.skipgrams(re_indexed_sentence, self.data.vocab_size,
-                                                         window_size=window_size,
-                                                         negative_samples=negative_samples,
-                                                         sampling_table=sampling_table)
-                    if couples:
-                        word_target, word_context = zip(*couples)
-                        word_target = np.array(word_target, dtype="int32")
-                        word_context = np.array(word_context, dtype="int32")
-                        labels = np.array(labels, dtype="int32")
-                        loss = self.model.train_on_batch([word_target, word_context], labels)
-                        batch += 1
-                        if 0 < max_batch < batch:
-                            break
+        skip_gram_iterator = self.data.skip_gram_iterator(window_size, negative_samples, shuffle=True,
+                                                          sampling_table=sampling_table)
+        self.model.fit_generator(skip_gram_iterator,
+                                 steps_per_epoch=steps_per_epoch,
+                                 epochs=epochs,
+                                 verbose=verbose,
+                                 class_weight=class_weight,
+                                 max_queue_size=10000)
 
     def write_embeddings(self, path):
         """ Saves the embeddings of a file """

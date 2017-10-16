@@ -3,6 +3,7 @@ import argparse
 
 from word2vec import Word2Vec
 from data import Data
+from keras.preprocessing import sequence
 
 
 def main():
@@ -12,13 +13,13 @@ def main():
     parser.add_argument('--embeddings', type=str, help='Path to output embeddings file')
     args = parser.parse_args()
 
-    FORMAT = '%(asctime)-15s %(message)s'
-    logging.basicConfig(filename='../example.log', format=FORMAT, level=logging.INFO)
+    log_format = '%(asctime)-15s %(message)s'
+    logging.basicConfig(filename='../example.log', format=log_format, level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler())
 
     data = Data(file_name=args.train)
     data.word_dict()
-    data.buildIndex()
+    data.word_index()
 
     word_2_vec = Word2Vec(data)
     word_2_vec.build(vector_dim=150)
@@ -26,7 +27,7 @@ def main():
     if args.image:
         word_2_vec.plot(args.image)
 
-    word_2_vec.train(args.train, negative_samples=5, epochs=1, window_size=10, max_batch=2)
+    word_2_vec.train(window_size=5, negative_samples=1, epochs=1, verbose=1)
 
     if args.embeddings:
         word_2_vec.write_embeddings(args.embeddings)
