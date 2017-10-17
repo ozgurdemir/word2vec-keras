@@ -1,5 +1,9 @@
+import json
 import logging
+import os
 from collections import defaultdict
+
+import numpy as np
 
 
 class Data:
@@ -54,3 +58,15 @@ class Data:
         sequence = [word2index[word] for word in sequence if word in word2index]
         logging.info("Pruned number of words: %d", len(sequence))
         return sequence
+
+    @staticmethod
+    def write_embeddings(path, index2word, embeddings):
+        """ Saves embeddings to a file """
+        embeddings_path = os.path.join(path, "embeddings.csv")
+        logging.info("Saving embeddings to %s", embeddings_path)
+        np.savetxt(embeddings_path, embeddings, fmt="%.4f")
+
+        index2word_path = os.path.join(path, "index2word.txt")
+        logging.info("Saving index2word to %s", index2word_path)
+        with open(index2word_path, 'w') as f:
+            f.write(json.dumps(index2word))

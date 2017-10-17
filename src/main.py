@@ -9,9 +9,8 @@ def main():
     parser = argparse.ArgumentParser(description='A word2vec implementation in Keras')
     parser.add_argument('--train', type=str, help='Path to train set', required=True)
     parser.add_argument('--image', type=str, help='Path to model image')
-    parser.add_argument('--embeddings', type=str, help='Path to output embeddings file')
-    parser.add_argument('--workers', type=int, help='Number of workers', default=1)
-    parser.add_argument('--threshold', type=int, help='Words occuring less than this are removed', default=5)
+    parser.add_argument('--embeddings', type=str, help='Path to output embeddings folder')
+    parser.add_argument('--threshold', type=int, help='Words occurring less than this are removed', default=5)
     parser.add_argument('--windowSize', type=int, help='Skip gram window size', default=4)
     parser.add_argument('--negatives', type=int, help='Number of negative samples per input word', default=1)
     parser.add_argument('--batchSize', type=int, help='Training batch size', default=512)
@@ -21,7 +20,7 @@ def main():
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(filename='../example.log', format=log_format, level=logging.INFO)
+    logging.basicConfig(filename='example.log', format=log_format, level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler())
 
     sequence = Data.read(file_name=args.train)
@@ -38,11 +37,11 @@ def main():
     if args.image:
         word_2_vec.plot(args.image)
 
-    word_2_vec.train(sequence, args.windowSize, args.negatives, args.batchSize, args.epochs, args.workers,
-                     args.verbose)
+    word_2_vec.train(sequence, args.windowSize, args.negatives, args.batchSize, args.epochs, args.verbose)
 
     if args.embeddings:
-        word_2_vec.write_embeddings(args.embeddings, index2word)
+        Data.write_embeddings(args.embeddings, index2word,
+                              word_2_vec.model.get_layer("word_embedding").get_weights()[0])
 
 
 if __name__ == "__main__":

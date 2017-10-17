@@ -1,6 +1,5 @@
 import logging
 
-import numpy as np
 from keras.layers import Input, Dense
 from keras.layers.core import Flatten
 from keras.layers.embeddings import Embedding
@@ -40,7 +39,7 @@ class Word2Vec:
         model.compile(loss="binary_crossentropy", optimizer=optimizer)
         self.model = model
 
-    def train(self, sequence, window_size, negative_samples, batch_size, epochs, workers, verbose):
+    def train(self, sequence, window_size, negative_samples, batch_size, epochs, verbose):
         """ Trains the word2vec model """
         logging.info("Training model")
 
@@ -58,21 +57,7 @@ class Word2Vec:
                                  steps_per_epoch=approx_steps_per_epoch,
                                  epochs=epochs,
                                  verbose=verbose,
-                                 class_weight=class_weight,
-                                 max_queue_size=100,
-                                 workers=workers)
-
-    def write_embeddings(self, path, index2word):
-        """ Saves the embeddings of a file """
-        logging.info("Saving embeddings to %s", path)
-        with open(path, 'wb') as fout:
-            for i in xrange(len(index2word)):
-                word = index2word[i]
-                weights = self.model.get_layer("word_embedding").get_weights()[0][i]
-                fout.write('%d\t' % word)
-                fout.write(np.array2string(weights, precision=4, separator=',', prefix="", max_line_width=10000))
-                fout.write("\n")
-            fout.flush()
+                                 class_weight=class_weight)
 
     def plot(self, path):
         """ Plots the model to a file"""

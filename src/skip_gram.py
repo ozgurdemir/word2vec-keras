@@ -6,6 +6,7 @@ class SkipGram:
     """ Simple skip gram iterator. The negative samples are sampled uniformly from the input
     sequence.
     """
+
     def __init__(self):
         pass
 
@@ -32,7 +33,11 @@ class SkipGram:
         labels = np.empty(shape=batch_size)
         while True:
             for i in xrange(batch_size):
-                word, context, label = iterator.next()
+                try:
+                    word, context, label = iterator.next()
+                except StopIteration:
+                    iterator = SkipGram.iterator(sequence, window_size, negative_samples)
+                    word, context, label = iterator.next()
                 words[i] = word
                 contexts[i] = context
                 labels[i] = label
