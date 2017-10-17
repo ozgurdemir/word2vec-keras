@@ -14,7 +14,7 @@ test:
 	echo $(DATA_DIR)
 
 example:
-	docker run --rm --name word2vec-keras -v $(DIR):/srv/ai gw000/keras python ai/src/main.py --train ai/data/text8
+	docker run -d --rm --name word2vec-keras -v $(DIR):/srv/ai gw000/keras python ai/src/main.py --train ai/data/text8
 
 download: $(TEXT_DATA)
 

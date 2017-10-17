@@ -1,44 +1,39 @@
 import unittest
 
-import numpy as np
-from keras.preprocessing import sequence
-
 from data import Data
 
 
 class TestData(unittest.TestCase):
-    def setUp(self):
+    def test_read(self):
         train_fixture = "fixtures/train.txt"
-        self.data = Data(train_fixture)
-        self.data.word_dict()
-        self.data.word_index()
-
-    def test_size(self):
-        self.assertEqual(self.data.size, 12)
+        got = Data.read(train_fixture)
+        want = ['1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4']
+        self.assertEqual(got, want)
 
     def test_word_dict(self):
-        word_dict = {'1': 2, '2': 2, '3': 2, '4': 2, '5': 1, '6': 1, '7': 1, '8': 1}
-        self.assertEqual(self.data.word_occurrence, word_dict)
+        sequence = ['1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4']
+        got = Data.word_dict(sequence)
+        want = {'1': 2, '3': 2, '2': 2, '5': 1, '4': 2, '7': 1, '6': 1, '8': 1}
+        self.assertEqual(got, want)
 
-    def test_vocab_size(self):
-        self.assertEqual(self.data.vocab_size, 8)
+    def test_prune_occurrence(self):
+        word_occurrence = {'1': 2, '3': 2, '2': 2, '5': 1, '4': 2, '7': 1, '6': 1, '8': 1}
+        got = Data.prune_occurrence(word_occurrence, 2)
+        want = {'1': 2, '3': 2, '2': 2, '4': 2}
+        self.assertEqual(got, want)
 
-    def test_word2index(self):
-        word2index = {'1': 0, '3': 1, '2': 2, '5': 4, '4': 3, '7': 5, '6': 6, '8': 7}
-        np.testing.assert_array_equal(self.data.word2Index, word2index)
+    def test_word_index(self):
+        word_occurrence = {'1': 2, '2': 2, '3': 2}
+        got = Data.word_index(word_occurrence)
+        want = ({'1': 0, '2': 2, '3': 1}, {0: '1', 1: '3', 2: '2'})
+        self.assertEqual(got, want)
 
-    def test_index2word(self):
-        index2word = {0: '1', 1: '3', 2: '2', 3: '4', 4: '5', 5: '7', 6: '6', 7: '8'}
-        np.testing.assert_array_equal(self.data.index2Word, index2word)
-
-    def test_iterator(self):
-        sampling_table = sequence.make_sampling_table(self.data.vocab_size, 1)
-        iterator = self.data.skip_gram_iterator(window_size=1, negative_samples=1, shuffle=False,
-                                                sampling_table=sampling_table)
-        self.assertEqual(iterator.next(), ([[2], [1]], [1]))
-        self.assertEqual(iterator.next(), ([[1], [2]], [1]))
-        self.assertEqual(iterator.next(), ([[1], [3]], [1]))
-        self.assertEqual(iterator.next(), ([[3], [1]], [1]))
+    def test_re_index(self):
+        sequence = ['1', '2', '3']
+        word2index = {'1': 0, '2': 1, '3': 2}
+        got = Data.re_index(sequence, word2index)
+        want = [0, 1, 2]
+        self.assertEqual(got, want)
 
 
 if __name__ == '__main__':
