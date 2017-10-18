@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+from scipy import spatial
 
 import numpy as np
 
@@ -36,11 +37,11 @@ def predict():
     candidates = {}
     for i in xrange(len(embeddings)):
         candidate_embedding = embeddings[i]
-        score = np.dot(word_embedding, candidate_embedding)
+        score = 1 - spatial.distance.cosine(word_embedding, candidate_embedding)
         candidate = index2word["%d" % i]
         candidates[candidate] = score
 
-    sorted_candidates = sorted(candidates.items(), key=lambda x: x[1])
+    sorted_candidates = sorted(candidates.items(), key=lambda x: x[1], reverse=True)
     for i in xrange(10):
         candidate, score = sorted_candidates[i]
         logging.info("%d: %s %.4f", i + 1, candidate, score)

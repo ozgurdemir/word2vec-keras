@@ -22,13 +22,11 @@ class Word2Vec:
         """ returns a word2vec model """
         logging.info("Building keras model")
         word_input = Input(shape=(1,), name="word_input")
-        word = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1, name="word_embedding")(
-            word_input)
+        word = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1, name="word_embedding")(word_input)
 
         context_input = Input(shape=(1,), name="context_input")
         context = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1,
-                            name="context_embedding")(
-            context_input)
+                            name="context_embedding")(context_input)
 
         merged = dot([word, context], axes=2, normalize=False, name="dot")
         merged = Flatten()(merged)
@@ -57,7 +55,8 @@ class Word2Vec:
                                  steps_per_epoch=approx_steps_per_epoch,
                                  epochs=epochs,
                                  verbose=verbose,
-                                 class_weight=class_weight)
+                                 class_weight=class_weight,
+                                 max_queue_size=100)
 
     def plot(self, path):
         """ Plots the model to a file"""

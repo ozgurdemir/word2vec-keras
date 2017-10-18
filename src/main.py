@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--embeddings', type=str, help='Path to output embeddings folder')
     parser.add_argument('--threshold', type=int, help='Words occurring less than this are removed', default=5)
     parser.add_argument('--windowSize', type=int, help='Skip gram window size', default=4)
-    parser.add_argument('--negatives', type=int, help='Number of negative samples per input word', default=1)
+    parser.add_argument('--negatives', type=int, help='Number of negative samples per input word', default=5)
     parser.add_argument('--batchSize', type=int, help='Training batch size', default=512)
     parser.add_argument('--epochs', type=int, help='Training epochs', default=1)
     parser.add_argument('--verbose', type=int, help='Verbosity', default=1)
