@@ -1,11 +1,12 @@
 import logging
 
+import tensorflow as tf
 from keras.layers import Input, Dense
 from keras.layers.core import Flatten
 from keras.layers.embeddings import Embedding
 from keras.layers.merge import dot
 from keras.models import Model
-from keras.optimizers import Adagrad
+from keras.optimizers import TFOptimizer
 from keras.utils import plot_model
 
 from skip_gram import SkipGram
@@ -32,7 +33,7 @@ class Word2Vec:
         merged = Flatten()(merged)
         output = Dense(1, activation='sigmoid', name="output")(merged)
 
-        optimizer = Adagrad(lr=0.01, epsilon=1e-08, decay=0.0)
+        optimizer = TFOptimizer(tf.train.AdagradOptimizer(0.01))
         model = Model(inputs=[word_input, context_input], outputs=output)
         model.compile(loss="binary_crossentropy", optimizer=optimizer)
         self.model = model
