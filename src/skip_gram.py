@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import logging
 
 
 class SkipGram:
@@ -31,11 +32,14 @@ class SkipGram:
         words = np.empty(shape=batch_size)
         contexts = np.empty(shape=batch_size)
         labels = np.empty(shape=batch_size)
+        epoch = 0
         while True:
             for i in xrange(batch_size):
                 try:
                     word, context, label = iterator.next()
                 except StopIteration:
+                    epoch += 1
+                    logging.info("iterated %d times over data set", epoch)
                     iterator = SkipGram.iterator(sequence, window_size, negative_samples)
                     word, context, label = iterator.next()
                 words[i] = word
