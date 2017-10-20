@@ -20,8 +20,7 @@ def main():
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(filename='example.log', format=log_format, level=logging.INFO)
-    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.basicConfig(format=log_format, level=logging.INFO)
 
     sequence = Data.read(file_name=args.train)
     word_occurrence = Data.word_dict(sequence)
