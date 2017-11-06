@@ -1,31 +1,33 @@
-.PHONY: run test example clean download
+.PHONY: run-it test example predict download clean
 
 TRAIN_SET_URL="http://mattmahoney.net/dc/text8.zip"
 
 DIR=$(shell pwd)
 DATA_DIR=$(DIR)/data
-TEXT_DATA=$(DATA_DIR)/text8
-ZIPPED_TEXT_DATA="$(TEXT_DATA).zip"
+DOCKER_IMAGE="gw000/keras"
+CONTAINER_NAME="word2vec-keras"
+DOCKER_RUN=docker run --rm --name $(CONTAINER_NAME) -v $(DIR):/srv/ai -w /srv/ai
+WORD?=king
 
-run:
-	docker run -it -t --rm -v $(DIR):/srv/ai gw000/keras /bin/bash
+run-it:
+	$(DOCKER_RUN) -it $(DOCKER_IMAGE) /bin/bash
 
 test:
-	docker run --rm --name word2vec-keras -v $(DIR):/srv/ai gw000/keras python -m unittest discover ai/src
+	$(DOCKER_RUN) $(DOCKER_IMAGE) python -m unittest discover src
 
-example:
-	docker run --rm --name word2vec-keras -v $(DIR):/srv/ai gw000/keras python ai/src/main.py --train ai/data/text8 --embeddings ai/data/
+example: data/text8
+	$(DOCKER_RUN) $(DOCKER_IMAGE) python src/main.py --train data/text8 --embeddings data/
 
 predict:
-	docker run --rm --name word2vec-keras -v $(DIR):/srv/ai gw000/keras python ai/src/predict.py --embeddings ai/data/ --word king
+	$(DOCKER_RUN) $(DOCKER_IMAGE) python src/predict.py --embeddings data/ --word $(WORD)
 
-download: $(TEXT_DATA)
+download: data/text8
 
-$(TEXT_DATA): $(ZIPPED_TEXT_DATA)
-	unzip -o $(ZIPPED_TEXT_DATA) -d $(DATA_DIR)
+data/text8: data/text8.zip
+	unzip -o data/text8.zip -d $(DATA_DIR)
 	touch $@
 
-$(ZIPPED_TEXT_DATA):
+data/text8.zip:
 	mkdir -p $(DATA_DIR)
 	wget $(TRAIN_SET_URL) -O $@
 	touch $@
