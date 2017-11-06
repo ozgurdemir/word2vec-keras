@@ -5,7 +5,7 @@ from data import Data
 
 class TestData(unittest.TestCase):
     def test_read(self):
-        train_fixture = "fixtures/train.txt"
+        train_fixture = "src/test/fixtures/train.txt"
         got = Data.read(train_fixture)
         want = ['1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4']
         self.assertEqual(got, want)
