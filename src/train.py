@@ -5,7 +5,7 @@ from data import Data
 from word2vec import Word2Vec
 
 
-def main():
+def train():
     parser = argparse.ArgumentParser(description='A word2vec implementation in Keras')
     parser.add_argument('--train', type=str, help='Path to train set', required=True)
     parser.add_argument('--image', type=str, help='Path to model image')
@@ -44,4 +44,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    train()

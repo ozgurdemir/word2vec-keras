@@ -38,7 +38,7 @@ class Data:
     @staticmethod
     def prune_occurrence(word_occurrence, threshold):
         """ Removes words that occur less than threshold times from the vocabulary """
-        word_occurrence = {k: v for k, v in word_occurrence.iteritems() if v >= threshold}
+        word_occurrence = {k: v for k, v in word_occurrence.items() if v >= threshold}
         logging.info("Pruned Vocabulary size: %d", len(word_occurrence))
         return word_occurrence
 

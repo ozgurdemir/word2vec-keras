@@ -14,14 +14,14 @@ class SkipGram:
     @staticmethod
     def iterator(sequence, window_size, negative_samples):
         """ An iterator which at each step returns a tuple of (word, context, label) """
-        for i in xrange(len(sequence)):
+        for i in range(len(sequence)):
             window_start = max(0, i - window_size)
             window_end = min(len(sequence), i + window_size + 1)
-            for j in xrange(window_start, window_end):
+            for j in range(window_start, window_end):
                 if i != j:
                     yield (sequence[i], sequence[j], 1)
 
-            for negative in xrange(negative_samples):
+            for negative in range(negative_samples):
                 j = random.randint(0, len(sequence) - 1)
                 yield (sequence[i], sequence[j], 0)
 
@@ -34,14 +34,14 @@ class SkipGram:
             words = np.empty(shape=batch_size, dtype=int)
             contexts = np.empty(shape=batch_size, dtype=int)
             labels = np.empty(shape=batch_size, dtype=int)
-            for i in xrange(batch_size):
+            for i in range(batch_size):
                 try:
-                    word, context, label = iterator.next()
+                    word, context, label = next(iterator)
                 except StopIteration:
                     epoch += 1
                     logging.info("iterated %d times over data set", epoch)
                     iterator = SkipGram.iterator(sequence, window_size, negative_samples)
-                    word, context, label = iterator.next()
+                    word, context, label = next(iterator)
                 words[i] = word
                 contexts[i] = context
                 labels[i] = label

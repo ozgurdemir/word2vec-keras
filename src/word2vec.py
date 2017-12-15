@@ -47,7 +47,7 @@ class Word2Vec:
         class_weight = {1: 1.0, 0: negative_weight}
         logging.info("Class weights set to: %s", class_weight)
 
-        num_words = long(len(sequence))
+        num_words = len(sequence)
         approx_steps_per_epoch = (num_words * (window_size * 2.0) + num_words * negative_samples) / batch_size
         logging.info("Approx. steps per epoch: %d", approx_steps_per_epoch)
         skip_gram_iterator = SkipGram.batch_iterator(sequence, window_size, negative_samples, batch_size)

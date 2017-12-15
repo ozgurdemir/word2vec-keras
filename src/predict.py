@@ -25,10 +25,10 @@ def predict():
     with open(index2word_path, 'r') as f:
         index2word = dict(json.load(f))
 
-    word2index = dict((v, int(k)) for k, v in index2word.iteritems())
+    word2index = dict((v, int(k)) for k, v in index2word.items())
 
     while True:
-        word = raw_input("""Please enter a word (enter "EXIT" to quit): """)
+        word = input("""Please enter a word (enter "EXIT" to quit): """)
         if word == "EXIT":
             return
         elif word not in word2index:
@@ -36,14 +36,14 @@ def predict():
         else:
             word_embedding = embeddings[word2index[word]]
             candidates = {}
-            for i in xrange(len(embeddings)):
+            for i in range(len(embeddings)):
                 candidate_embedding = embeddings[i]
                 score = 1 - spatial.distance.cosine(word_embedding, candidate_embedding)
                 candidate = index2word["%d" % i]
                 candidates[candidate] = score
 
             sorted_candidates = sorted(candidates.items(), key=lambda x: x[1], reverse=True)
-            for i in xrange(10):
+            for i in range(10):
                 candidate, score = sorted_candidates[i]
                 logging.info("%d: %s %.4f", i + 1, candidate, score)
 
