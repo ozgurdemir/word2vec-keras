@@ -1,10 +1,7 @@
 import argparse
-import json
 import logging
-import os
 
 import pandas as pd
-from scipy.spatial.distance import cdist
 from scipy.spatial.distance import cosine
 
 
