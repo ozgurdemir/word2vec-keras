@@ -9,7 +9,7 @@ def train():
     parser = argparse.ArgumentParser(description='A word2vec implementation in Keras')
     parser.add_argument('--train', type=str, help='Path to train set', required=True)
     parser.add_argument('--image', type=str, help='Path to model image')
-    parser.add_argument('--embeddings', type=str, help='Path to output embeddings folder')
+    parser.add_argument('--embeddings', type=str, help='Path to output embeddings')
     parser.add_argument('--threshold', type=int, help='Words occurring less than this are removed', default=5)
     parser.add_argument('--windowSize', type=int, help='Skip gram window size', default=4)
     parser.add_argument('--negatives', type=int, help='Number of negative samples per input word', default=5)

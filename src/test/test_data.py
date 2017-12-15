@@ -1,11 +1,14 @@
 import unittest
+import numpy as np
+import os
+import io
 
 from data import Data
 
 
 class TestData(unittest.TestCase):
     def test_read(self):
-        train_fixture = "src/test/fixtures/train.txt"
+        train_fixture = os.path.join(os.path.dirname(__file__), "fixtures/train.txt")
         got = Data.read(train_fixture)
         want = ['1', '2', '3', '4', '5', '6', '7', '8', '1', '2', '3', '4']
         self.assertEqual(got, want)
@@ -25,7 +28,7 @@ class TestData(unittest.TestCase):
     def test_word_index(self):
         word_occurrence = {'1': 2, '2': 2, '3': 2}
         got = Data.word_index(word_occurrence)
-        want = ({'1': 0, '2': 2, '3': 1}, {0: '1', 1: '3', 2: '2'})
+        want = ({'1': 0, '2': 1, '3': 2}, {0: '1', 1: '2', 2: '3'})
         self.assertEqual(got, want)
 
     def test_re_index(self):
@@ -34,6 +37,14 @@ class TestData(unittest.TestCase):
         got = Data.re_index(sequence, word2index)
         want = [0, 1, 2]
         self.assertEqual(got, want)
+
+    def test_write_embeddings(self):
+        embeddings = np.array([[1, 2, 3], [4, 5, 6]])
+        index2word = {1: "second", 0: "first"}
+        buffer = io.StringIO()
+        Data.write_embeddings(buffer, index2word, embeddings)
+        wanted = "first,1,2,3\nsecond,4,5,6\n"
+        self.assertEqual(buffer.getvalue(), wanted)
 
 
 if __name__ == '__main__':

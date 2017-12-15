@@ -1,9 +1,8 @@
-import json
 import logging
-import os
-from collections import defaultdict
 
 import numpy as np
+import pandas as pd
+from collections import defaultdict
 
 
 class Data:
@@ -48,7 +47,7 @@ class Data:
         logging.info("Building up word indices")
         word2index = dict()
         index2word = dict()
-        for (i, word) in enumerate(word_occurrence):
+        for (i, word) in enumerate(sorted(word_occurrence)):
             index2word[i] = word
             word2index[word] = i
         return word2index, index2word
@@ -62,11 +61,9 @@ class Data:
     @staticmethod
     def write_embeddings(path, index2word, embeddings):
         """ Saves embeddings to a file """
-        embeddings_path = os.path.join(path, "embeddings.csv")
-        logging.info("Saving embeddings to %s", embeddings_path)
-        np.savetxt(embeddings_path, embeddings, fmt="%.4f")
-
-        index2word_path = os.path.join(path, "index2word.txt")
-        logging.info("Saving index2word to %s", index2word_path)
-        with open(index2word_path, 'w') as f:
-            f.write(json.dumps(index2word))
+        logging.info("Saving embeddings to %s", path)
+        np_index = np.empty(shape=len(index2word), dtype=object)
+        for index, word in index2word.items():
+            np_index[index] = word
+        df = pd.DataFrame(data=embeddings, index=np_index)
+        df.to_csv(path, float_format="%.4f", header=False)
