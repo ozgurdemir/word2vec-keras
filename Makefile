@@ -7,7 +7,6 @@ DATA_DIR=$(DIR)/data
 DOCKER_IMAGE="gw000/keras"
 CONTAINER_NAME="word2vec-keras"
 DOCKER_RUN=docker run --rm --name $(CONTAINER_NAME) -v $(DIR):/srv/ai -w /srv/ai
-WORD?=king
 
 run-it:
 	$(DOCKER_RUN) -it $(DOCKER_IMAGE) /bin/bash
@@ -19,7 +18,7 @@ example: data/text8
 	$(DOCKER_RUN) $(DOCKER_IMAGE) python src/main.py --train data/text8 --embeddings data/
 
 predict:
-	$(DOCKER_RUN) $(DOCKER_IMAGE) python src/predict.py --embeddings data/ --word $(WORD)
+	$(DOCKER_RUN) -it $(DOCKER_IMAGE) python src/predict.py --embeddings data/
 
 download: data/text8
 
