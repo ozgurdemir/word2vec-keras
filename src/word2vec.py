@@ -1,6 +1,7 @@
 import logging
 
 import tensorflow as tf
+from keras.initializers import RandomNormal
 from keras.layers import Input, Dense
 from keras.layers.core import Flatten
 from keras.layers.embeddings import Embedding
@@ -8,7 +9,6 @@ from keras.layers.merge import dot
 from keras.models import Model
 from keras.optimizers import TFOptimizer
 from keras.utils import plot_model
-from keras.initializers import RandomNormal
 
 from skip_gram import SkipGram
 

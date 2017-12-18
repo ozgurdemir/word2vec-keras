@@ -3,3 +3,4 @@ keras
 pydot
 pandas
 scipy
+tensorflow
