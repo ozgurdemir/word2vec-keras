@@ -2,7 +2,7 @@ import argparse
 import logging
 
 import pandas as pd
-from scipy.spatial.distance import cosine
+from scipy.spatial.distance import cdist
 
 
 def predict():
@@ -17,8 +17,6 @@ def predict():
     logging.info("Loading embeddings from %s", args.embeddings)
     embeddings = pd.read_csv(args.embeddings, index_col=0)
 
-    query = embeddings.loc['as']
-
     while True:
         word = input("""Please enter a word (enter "EXIT" to quit): """)
         if word == "EXIT":
@@ -27,9 +25,9 @@ def predict():
             print("Could not find word '%s' in index" % word)
         else:
             query = embeddings.loc[word]
-            similarities = embeddings.apply(lambda x: 1.0 - cosine(query, x), axis=1)
-            similarities.sort_values(inplace=True, ascending=False)
-            print(similarities[0:10])
+            scores = 1.0 - cdist(query.to_frame().T, embeddings)
+            embeddings['score'] = scores[0]
+            print(embeddings['score'].sort_values(ascending=False)[0:10])
 
 
 if __name__ == "__main__":

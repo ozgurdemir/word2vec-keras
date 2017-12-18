@@ -2,3 +2,4 @@ numpy
 keras
 pydot
 pandas
+scipy
