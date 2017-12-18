@@ -17,10 +17,13 @@ def train():
     parser.add_argument('--epochs', type=int, help='Training epochs', default=1)
     parser.add_argument('--verbose', type=int, help='Verbosity', default=1)
     parser.add_argument('--vectorDim', type=int, help='Size of the embeddings', default=50)
+    parser.add_argument('--learnRate', type=float, help='Initial learn rate', default=0.1)
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
+
+    logging.info(args)
 
     sequence = Data.read(file_name=args.train)
     word_occurrence = Data.word_dict(sequence)
@@ -31,7 +34,7 @@ def train():
     vocab_size = len(word_occurrence)
 
     word_2_vec = Word2Vec()
-    word_2_vec.build(args.vectorDim, vocab_size)
+    word_2_vec.build(args.vectorDim, vocab_size, args.learnRate)
 
     if args.image:
         word_2_vec.plot(args.image)

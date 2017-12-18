@@ -18,7 +18,7 @@ test:
 	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 -m unittest discover src
 
 train: data/text8
-	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 src/train.py --train data/text8 --embeddings data/embeddings.csv
+	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 src/train.py --train data/text8 --embeddings data/embeddings.csv ${ARGS}
 
 predict:
 	$(DOCKER_RUN) -it $(DOCKER_IMAGE) python3 src/predict.py --embeddings data/embeddings.csv

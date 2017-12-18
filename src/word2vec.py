@@ -19,7 +19,7 @@ class Word2Vec:
     def __init__(self):
         self.model = None
 
-    def build(self, vector_dim, vocab_size):
+    def build(self, vector_dim, vocab_size, learn_rate):
         """ returns a word2vec model """
         logging.info("Building keras model")
         word_input = Input(shape=(1,), name="word_input")
@@ -33,7 +33,7 @@ class Word2Vec:
         merged = Flatten()(merged)
         output = Dense(1, activation='sigmoid', name="output")(merged)
 
-        optimizer = TFOptimizer(tf.train.AdagradOptimizer(0.01))
+        optimizer = TFOptimizer(tf.train.AdagradOptimizer(learn_rate))
         model = Model(inputs=[word_input, context_input], outputs=output)
         model.compile(loss="binary_crossentropy", optimizer=optimizer)
         self.model = model
