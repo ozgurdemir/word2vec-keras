@@ -8,6 +8,7 @@ from keras.layers.merge import dot
 from keras.models import Model
 from keras.optimizers import TFOptimizer
 from keras.utils import plot_model
+from keras.initializers import RandomNormal
 
 from skip_gram import SkipGram
 
@@ -22,12 +23,18 @@ class Word2Vec:
     def build(self, vector_dim, vocab_size, learn_rate):
         """ returns a word2vec model """
         logging.info("Building keras model")
+
+        stddev = 1.0 / vector_dim
+        logging.info("Setting initializer standard deviation to: %.4f", stddev)
+        initializer = RandomNormal(mean=0.0, stddev=stddev, seed=None)
+
         word_input = Input(shape=(1,), name="word_input")
-        word = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1, name="word_embedding")(word_input)
+        word = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1,
+                         name="word_embedding", embeddings_initializer=initializer)(word_input)
 
         context_input = Input(shape=(1,), name="context_input")
         context = Embedding(input_dim=vocab_size, output_dim=vector_dim, input_length=1,
-                            name="context_embedding")(context_input)
+                            name="context_embedding", embeddings_initializer=initializer)(context_input)
 
         merged = dot([word, context], axes=2, normalize=False, name="dot")
         merged = Flatten()(merged)
