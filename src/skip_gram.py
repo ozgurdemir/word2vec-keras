@@ -22,7 +22,7 @@ class SkipGram:
                     yield (sequence[i], sequence[j], 1)
 
             for negative in range(negative_samples):
-                j = random.randint(0, len(sequence) - 1)
+                j = np.random.randint(0, len(sequence))
                 yield (sequence[i], sequence[j], 0)
 
     @staticmethod
