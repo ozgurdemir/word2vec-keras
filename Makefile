@@ -9,7 +9,7 @@ CONTAINER_NAME="word2vec-keras"
 DOCKER_RUN=docker run --rm --name $(CONTAINER_NAME) -v $(DIR):/srv/ai -w /srv/ai
 
 build:
-	docker build . -t ozgurdemir/keras
+	docker build . -t $(DOCKER_IMAGE)
 
 run-it:
 	$(DOCKER_RUN) -it $(DOCKER_IMAGE) /bin/bash
