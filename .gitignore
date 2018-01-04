@@ -7,6 +7,7 @@
 *.o
 *.so
 *.pyc
+*.c
 
 # Packages #
 ############
@@ -43,3 +44,5 @@ tmtagsHistory
 *.iml
 data/
 out/
+/src/skip_gram.html
+/src/skip_gram.pyx.lprof

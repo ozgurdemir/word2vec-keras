@@ -4,3 +4,5 @@ pydot
 pandas
 scipy
 tensorflow
+Cython
+line_profiler

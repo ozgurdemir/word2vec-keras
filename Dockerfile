@@ -10,4 +10,4 @@ RUN easy_install3 pip
 ADD requirements.txt .
 
 # install dependencies from python packages
-RUN pip --no-cache-dir install -r requirements.txt
+RUN pip3 --no-cache-dir install -r requirements.txt

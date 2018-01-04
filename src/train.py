@@ -1,5 +1,6 @@
 import argparse
 import logging
+import numpy as np
 
 from data import Data
 from word2vec import Word2Vec
@@ -30,6 +31,7 @@ def train():
     word_occurrence = Data.prune_occurrence(word_occurrence, args.threshold)
     word2index, index2word = Data.word_index(word_occurrence)
     sequence = Data.re_index(sequence, word2index)
+    sequence = np.asarray(sequence, dtype=np.int)
 
     vocab_size = len(word_occurrence)
 
