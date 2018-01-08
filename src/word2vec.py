@@ -58,7 +58,8 @@ class Word2Vec:
         approx_steps_per_epoch = (sequence_length * (
                 window_size * 2.0) + sequence_length * negative_samples) / batch_size
         logging.info("Approx. steps per epoch: %d", approx_steps_per_epoch)
-        batch_iterator = skip_gram.batch_iterator(sequence, window_size, negative_samples, batch_size)
+        seed = 1
+        batch_iterator = skip_gram.batch_iterator(sequence, window_size, negative_samples, batch_size, seed)
 
         self.model.fit_generator(batch_iterator,
                                  steps_per_epoch=approx_steps_per_epoch,

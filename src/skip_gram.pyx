@@ -9,13 +9,14 @@ cimport cython
 DTYPE = np.int
 ctypedef np.int_t DTYPE_t
 
-from libc.stdlib cimport rand, RAND_MAX
+from libc.stdlib cimport rand, srand, RAND_MAX
 
 @cython.binding(True)
 @cython.boundscheck(False)
 @cython.cdivision(True)
-def skip_gram_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples):
+def skip_gram_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples, int seed):
     """ An iterator which at each step returns a tuple of (word, context, label) """
+    srand(seed);
     cdef int sequence_length = sequence.shape[0]
     cdef int i, j, window_start, window_end, epoch
     cdef float random_float
@@ -41,9 +42,9 @@ def skip_gram_iterator(DTYPE_t[:] sequence, int window_size, int negative_sample
 
 @cython.binding(True)
 @cython.boundscheck(False)
-def batch_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples, int batch_size):
+def batch_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples, int batch_size, int seed):
     """ An iterator which returns training instances in batches """
-    iterator = skip_gram_iterator(sequence, window_size, negative_samples)
+    iterator = skip_gram_iterator(sequence, window_size, negative_samples, seed)
     cdef DTYPE_t[:] words = np.empty(shape=batch_size, dtype=DTYPE)
     cdef DTYPE_t[:] contexts = np.empty(shape=batch_size, dtype=DTYPE)
     cdef DTYPE_t[:] labels = np.empty(shape=batch_size, dtype=DTYPE)

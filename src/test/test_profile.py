@@ -11,5 +11,5 @@ batch_size = 512
 sequence = np.random.randint(low=0, high=num_words, size=sequence_length, dtype=np.int)
 
 profile = line_profiler.LineProfiler(skip_gram.skip_gram_iterator)
-profile.runcall(skip_gram.skip_gram_iterator, sequence, window_size, negative_samples)
+profile.runcall(skip_gram.skip_gram_iterator, sequence, window_size, negative_samples, 1)
 profile.print_stats()

@@ -18,9 +18,9 @@ run-it:
 	$(DOCKER_RUN) -it $(DOCKER_IMAGE) /bin/bash
 
 test:
-	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 -m unittest discover src
+	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 -m unittest
 
-train: data/text8
+train: data/text8 compile
 	$(DOCKER_RUN) $(DOCKER_IMAGE) python3 train.py --train ../data/text8 --embeddings ../data/embeddings.csv ${ARGS}
 
 predict:
