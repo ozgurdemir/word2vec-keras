@@ -12,11 +12,16 @@ ctypedef np.int_t DTYPE_t
 from libc.stdlib cimport rand, RAND_MAX
 
 @cython.binding(True)
-def skip_gram_iterator(np.ndarray sequence, int window_size, int negative_samples):
+@cython.boundscheck(False)
+@cython.cdivision(True)
+def skip_gram_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples):
     """ An iterator which at each step returns a tuple of (word, context, label) """
     cdef int sequence_length = sequence.shape[0]
-    cdef int i, j, window_start, window_end
-    for i in range(sequence_length):
+    cdef int i, j, window_start, window_end, epoch
+    cdef float random_float
+    epoch = 0
+    i = 0
+    while True:
         window_start = max(0, i - window_size)
         window_end = min(sequence_length, i + window_size + 1)
         for j in range(window_start, window_end):
@@ -24,27 +29,29 @@ def skip_gram_iterator(np.ndarray sequence, int window_size, int negative_sample
                 yield (sequence[i], sequence[j], 1)
 
         for negative in range(negative_samples):
-            j = 1 + int(rand()/(RAND_MAX * sequence_length * 1.0))
+            random_float = rand() / (RAND_MAX * 1.0)
+            j = int(random_float * sequence_length)
             yield (sequence[i], sequence[j], 0)
 
+        i += 1
+        if i == sequence_length:
+          epoch += 1
+          logging.info("iterated %d times over data set", epoch)
+          i = 0
+
 @cython.binding(True)
-def batch_iterator(np.ndarray sequence, int window_size, int negative_samples, int batch_size):
+@cython.boundscheck(False)
+def batch_iterator(DTYPE_t[:] sequence, int window_size, int negative_samples, int batch_size):
     """ An iterator which returns training instances in batches """
     iterator = skip_gram_iterator(sequence, window_size, negative_samples)
-    cdef int epoch = 0
+    cdef DTYPE_t[:] words = np.empty(shape=batch_size, dtype=DTYPE)
+    cdef DTYPE_t[:] contexts = np.empty(shape=batch_size, dtype=DTYPE)
+    cdef DTYPE_t[:] labels = np.empty(shape=batch_size, dtype=DTYPE)
+    cdef int word, context, label
     while True:
-        words = np.empty(shape=batch_size, dtype=DTYPE)
-        contexts = np.empty(shape=batch_size, dtype=DTYPE)
-        labels = np.empty(shape=batch_size, dtype=DTYPE)
         for i in range(batch_size):
-            try:
-                word, context, label = next(iterator)
-            except StopIteration:
-                epoch += 1
-                logging.info("iterated %d times over data set", epoch)
-                iterator = skip_gram_iterator(sequence, window_size, negative_samples)
-                word, context, label = next(iterator)
-            words[i] = word
-            contexts[i] = context
-            labels[i] = label
+          word, context, label = next(iterator)
+          words[i] = word
+          contexts[i] = context
+          labels[i] = label
         yield ([words, contexts], labels)
