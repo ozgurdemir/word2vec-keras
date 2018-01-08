@@ -2,7 +2,7 @@ import argparse
 import logging
 import numpy as np
 
-from data import Data
+import data
 from word2vec import Word2Vec
 
 
@@ -26,11 +26,11 @@ def train():
 
     logging.info(args)
 
-    sequence = Data.read(file_name=args.train)
-    word_occurrence = Data.word_dict(sequence)
-    word_occurrence = Data.prune_occurrence(word_occurrence, args.threshold)
-    word2index, index2word = Data.word_index(word_occurrence)
-    sequence = Data.re_index(sequence, word2index)
+    sequence = data.read(file_name=args.train)
+    word_occurrence = data.word_dict(sequence)
+    word_occurrence = data.prune_occurrence(word_occurrence, args.threshold)
+    word2index, index2word = data.word_index(word_occurrence)
+    sequence = data.re_index(sequence, word2index)
     sequence = np.asarray(sequence, dtype=np.int)
 
     vocab_size = len(word_occurrence)
@@ -44,7 +44,7 @@ def train():
     word_2_vec.train(sequence, args.windowSize, args.negatives, args.batchSize, args.epochs, args.verbose)
 
     if args.embeddings:
-        Data.write_embeddings(args.embeddings, index2word,
+        data.write_embeddings(args.embeddings, index2word,
                               word_2_vec.model.get_layer("word_embedding").get_weights()[0])
 
 
