@@ -25,7 +25,7 @@ def predict():
             print("Could not find word '%s' in index" % word)
         else:
             query = embeddings.loc[word]
-            scores = 1.0 - cdist(query.to_frame().T, embeddings)
+            scores = 1.0 - cdist(query.to_frame().T, embeddings, 'cosine')
             embeddings['score'] = scores[0]
             print(embeddings['score'].sort_values(ascending=False)[0:10])
 
